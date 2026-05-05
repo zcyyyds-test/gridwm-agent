@@ -1,0 +1,13 @@
+# configs/data.yaml — Phase 1 path-A collection config
+out_dir: data
+n_trajectories: 1000
+seed: 42
+concurrency: 3                # conservative against transient platform errors during long collection
+val_frac: 0.1
+test_frac: 0.1
+expected_n_samples: 15001     # verified by Day-1 verify_cloudpss.py — amend if different
+output_dt_s: 0.001            # 1 ms (CloudPSS default downsample of 50µs sim step)
+cloudpss_version: "4.5.111"
+sim_end_time_s: 15.0
+sim_step_time_s: 5.0e-5       # 50 µs sim step
+sim_n_cpu: 1

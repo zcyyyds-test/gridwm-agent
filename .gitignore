@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+dist/
+build/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# uv
+.uv/
+uv.lock.bak
+
+# Run-time artifacts. We ignore everything under outputs/ except the
+# bundled demo_run that the README quickstart depends on. Use
+# `outputs/*` (not `outputs/`) so the negation below can re-include
+# specific subpaths — `outputs/` would short-circuit the whole tree.
+outputs/*
+!outputs/demo_run/
+
+*.log
+
+# Raw collected CloudPSS trajectories — too large to ship in-repo and
+# subject to CloudPSS terms of use. Re-collect with scripts/collect_data.py
+# or download from the dataset release referenced in README → Data.
+data/raw/
+data/manifest.json
+
+# Local / internal scratch
+.internal/
+.scratch/
+decisions.md
+KICKOFF.md
+plans/
+docs/superpowers/
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+*.swp

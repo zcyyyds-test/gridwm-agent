@@ -1,0 +1,19 @@
+{
+  "critic_pearson": 0.6375740766525269,
+  "critic_spearman": 0.6175168752670288,
+  "discover_top10pct_hit_rate": 0.6875,
+  "safe_bottom10pct_hit_rate": 0.6875,
+  "discover_oracle_regret": 0.025026239454746246,
+  "safe_oracle_regret": 0.030061272904276848,
+  "risk_lift_vs_random": 0.7665234804153442,
+  "risk_reduction_vs_random": 0.34996575117111206,
+  "agent_latency_ms": 0.2537274995120242,
+  "exhaustive_rollout_latency_ms": 634.9211125052534,
+  "agent_discover_mean_risk": 0.5732042789459229,
+  "agent_safe_mean_risk": 0.21092411875724792,
+  "random_mean_risk": 0.3244815468788147,
+  "oracle_high_mean_risk": 0.5982305407524109,
+  "oracle_low_mean_risk": 0.18086284399032593,
+  "physics_heuristic_mean_risk": 0.5025157928466797,
+  "_heuristic_baseline_version": "legacy_ft7_plus10_bias"
+}

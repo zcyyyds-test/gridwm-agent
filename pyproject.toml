@@ -1,0 +1,43 @@
+[project]
+name = "gridwm-agent"
+version = "0.4.0"
+description = "world-model-distilled risk-ranking agent for sub-millisecond fault foresight on power-grid EMT"
+authors = [{name = "Chenyu Zhou", email = "zhouchenyu@moegi.waseda.jp"}]
+requires-python = ">=3.12"
+readme = "README.md"
+dependencies = [
+    "torch>=2.5",
+    "torch_geometric>=2.6",
+    "h5py>=3.11",
+    "numpy>=1.26",
+    "pyyaml>=6.0",
+    "matplotlib>=3.9",
+    "tensorboard>=2.18",
+    "tqdm>=4.66",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3",
+    "ruff>=0.7",
+    "pytest-cov>=5.0",
+]
+serve = [
+    "fastapi>=0.115",
+    "uvicorn>=0.30",
+    "pydantic>=2.7",
+    "httpx>=0.27",
+]
+collect = [
+    # CloudPSS SDK is required for the data-collection scripts; install it
+    # from your CloudPSS distribution. The trained checkpoints in this repo
+    # do not require the SDK at inference time.
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --strict-markers"

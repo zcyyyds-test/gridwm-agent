@@ -1,0 +1,773 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>gridwm-agent World Model Playground</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #11120f;
+      --panel: #191b16;
+      --panel-2: #20231d;
+      --line: #34382e;
+      --text: #f2f0e8;
+      --muted: #aaa99d;
+      --green: #b9ff45;
+      --cyan: #4fd7d0;
+      --amber: #f4bc43;
+      --red: #ff6b57;
+      --ink: #090a08;
+      --shadow: 0 20px 60px rgba(0, 0, 0, .32);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px) 0 0 / 48px 48px,
+        linear-gradient(0deg, rgba(255,255,255,.035) 1px, transparent 1px) 0 0 / 48px 48px,
+        radial-gradient(circle at 18% 0%, rgba(185, 255, 69, .12), transparent 34%),
+        radial-gradient(circle at 86% 18%, rgba(79, 215, 208, .11), transparent 28%),
+        var(--bg);
+      color: var(--text);
+      font-family: "Avenir Next", "Helvetica Neue", sans-serif;
+      letter-spacing: 0;
+    }
+
+    button, select, input { font: inherit; }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+    }
+
+    aside {
+      border-right: 1px solid var(--line);
+      background: rgba(17, 18, 15, .82);
+      backdrop-filter: blur(18px);
+      padding: 28px;
+      overflow: auto;
+    }
+
+    main {
+      padding: 28px;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      gap: 18px;
+      min-width: 0;
+    }
+
+    .eyebrow {
+      color: var(--green);
+      text-transform: uppercase;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .12em;
+    }
+
+    h1 {
+      margin: 10px 0 12px;
+      max-width: 1040px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(36px, 5vw, 86px);
+      line-height: .92;
+      letter-spacing: 0;
+      font-weight: 700;
+    }
+
+    aside h1 {
+      font-size: clamp(44px, 4.8vw, 58px);
+      line-height: .94;
+      overflow-wrap: break-word;
+    }
+
+    .lead {
+      max-width: 850px;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.55;
+    }
+
+    .status-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(150px, 1fr));
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .metric {
+      min-height: 86px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .metric b {
+      display: block;
+      color: var(--text);
+      font-size: 28px;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      font-weight: 700;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: rgba(25, 27, 22, .92);
+      box-shadow: var(--shadow);
+    }
+
+    .control-title {
+      margin: 0 0 14px;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      color: var(--muted);
+    }
+
+    .scenario-list {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .scenario {
+      width: 100%;
+      min-height: 72px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--panel);
+      color: var(--text);
+      text-align: left;
+      padding: 12px;
+      cursor: pointer;
+      transition: transform .16s ease, border-color .16s ease, background .16s ease;
+    }
+
+    .scenario:hover { transform: translateY(-1px); border-color: rgba(185,255,69,.55); }
+    .scenario.active { background: #222719; border-color: var(--green); }
+
+    .scenario strong {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    .scenario small {
+      color: var(--muted);
+      line-height: 1.35;
+    }
+
+    .controls {
+      display: grid;
+      gap: 16px;
+    }
+
+    label {
+      display: grid;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .09em;
+      font-weight: 800;
+    }
+
+    select, input[type="range"] {
+      width: 100%;
+    }
+
+    select {
+      color: var(--text);
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 10px 12px;
+    }
+
+    input[type="range"] {
+      accent-color: var(--green);
+    }
+
+    .segments {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+    }
+
+    .segments button {
+      height: 36px;
+      border-radius: 6px;
+      border: 1px solid var(--line);
+      background: var(--panel-2);
+      color: var(--muted);
+      cursor: pointer;
+      font-weight: 800;
+    }
+
+    .segments button.active {
+      color: var(--ink);
+      background: var(--green);
+      border-color: var(--green);
+    }
+
+    .stage {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(320px, .65fr);
+      gap: 18px;
+      min-height: 0;
+    }
+
+    .chart-wrap {
+      display: grid;
+      grid-template-rows: auto minmax(380px, 1fr);
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel-head h2 {
+      margin: 0;
+      font-size: 15px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .tag {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 6px 10px;
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .chart-canvas {
+      min-height: 380px;
+      background: #12140f;
+    }
+
+    .side-stack {
+      display: grid;
+      grid-template-rows: minmax(260px, .85fr) auto;
+      gap: 18px;
+      min-height: 0;
+    }
+
+    .world-canvas {
+      min-height: 260px;
+      background: #11130f;
+    }
+
+    .risk-body {
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .risk-score {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: end;
+      gap: 14px;
+    }
+
+    .risk-score strong {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 68px;
+      line-height: .9;
+      letter-spacing: 0;
+    }
+
+    .risk-score span {
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .bar {
+      height: 10px;
+      background: #282b24;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .bar i {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, var(--green), var(--amber), var(--red));
+      transition: width .24s ease;
+    }
+
+    .fact-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .fact {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--panel-2);
+      padding: 12px;
+      min-height: 70px;
+    }
+
+    .fact b {
+      display: block;
+      font-size: 20px;
+      margin-bottom: 5px;
+    }
+
+    .fact span {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      font-weight: 800;
+    }
+
+    .empty {
+      margin: 32px;
+      padding: 18px;
+      border: 1px solid var(--red);
+      border-radius: 6px;
+      color: var(--red);
+      background: rgba(255, 107, 87, .08);
+    }
+
+    @media (max-width: 1080px) {
+      .app { grid-template-columns: 1fr; }
+      aside { border-right: 0; border-bottom: 1px solid var(--line); }
+      .stage { grid-template-columns: 1fr; }
+      .status-row { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 640px) {
+      aside, main { padding: 18px; }
+      .status-row, .fact-grid { grid-template-columns: 1fr; }
+      .panel-head { align-items: flex-start; flex-direction: column; }
+      h1 { font-size: 42px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside>
+      <div class="eyebrow">gridwm-agent V2</div>
+      <h1>World Model Lab</h1>
+      <p class="lead">Event-conditioned latent recurrent dynamics (over a placeholder graph) for imagining power-grid failure futures.</p>
+
+      <h2 class="control-title">Fault Event Library</h2>
+      <div id="scenarioList" class="scenario-list"></div>
+
+      <div class="controls">
+        <label>
+          Generator
+          <select id="generatorSelect"></select>
+        </label>
+        <label>
+          Channel
+          <div id="channelSegments" class="segments"></div>
+        </label>
+        <label>
+          Rollout horizon <span id="horizonLabel"></span>
+          <input id="horizonRange" type="range" min="1" max="10" value="10">
+        </label>
+      </div>
+    </aside>
+
+    <main>
+      <header>
+        <div class="eyebrow">Latent Recurrent Dynamics Model</div>
+        <h1>Choose a fault event. Imagine the future. Surface risk.</h1>
+        <p class="lead">
+          gridwm-agent turns a graph state and a fault action into counterfactual rollout,
+          then reads the imagined trajectory as a risk signal for downstream decisions.
+        </p>
+        <div id="metricsRow" class="status-row"></div>
+      </header>
+
+      <section class="stage">
+        <div class="panel chart-wrap">
+          <div class="panel-head">
+            <h2 id="chartTitle">Counterfactual Rollout</h2>
+            <span class="tag" id="eventTag">event</span>
+          </div>
+          <canvas id="chartCanvas" class="chart-canvas" width="1200" height="620"></canvas>
+        </div>
+
+        <div class="side-stack">
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Latent World Map</h2>
+              <span class="tag" id="dominantTag">dominant channel</span>
+            </div>
+            <canvas id="worldCanvas" class="world-canvas" width="720" height="420"></canvas>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Risk Signal</h2>
+              <span class="tag" id="riskBand">WATCH</span>
+            </div>
+            <div class="risk-body">
+              <div class="risk-score">
+                <strong id="riskScore">0</strong>
+                <span>imagined future risk</span>
+              </div>
+              <div class="bar"><i id="riskBar"></i></div>
+              <div id="factGrid" class="fact-grid"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="world_model_playground_data.js"></script>
+  <script>
+    const data = window.GRIDWM_PLAYGROUND_DATA;
+    const chartCanvas = document.getElementById("chartCanvas");
+    const worldCanvas = document.getElementById("worldCanvas");
+    const chart = chartCanvas.getContext("2d");
+    const world = worldCanvas.getContext("2d");
+
+    const state = {
+      sampleIndex: 0,
+      channelIndex: 0,
+      generatorIndex: 0,
+      horizon: 10
+    };
+
+    const colors = {
+      pred: "#b9ff45",
+      truth: "#4fd7d0",
+      zero: "#77796f",
+      fault: "rgba(244,188,67,.12)",
+      grid: "rgba(242,240,232,.10)",
+      text: "#f2f0e8",
+      muted: "#aaa99d",
+      red: "#ff6b57",
+      amber: "#f4bc43"
+    };
+
+    function fmt(value, digits = 3) {
+      if (value === null || value === undefined || Number.isNaN(value)) return "n/a";
+      if (typeof value === "boolean") return value ? "yes" : "no";
+      return Number(value).toFixed(digits).replace(/\.?0+$/, "");
+    }
+
+    function sample() {
+      return data.samples[state.sampleIndex];
+    }
+
+    function channelName() {
+      return data.channels[state.channelIndex];
+    }
+
+    function resizeCanvas(canvas) {
+      const rect = canvas.getBoundingClientRect();
+      const ratio = window.devicePixelRatio || 1;
+      canvas.width = Math.max(1, Math.floor(rect.width * ratio));
+      canvas.height = Math.max(1, Math.floor(rect.height * ratio));
+      const ctx = canvas.getContext("2d");
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      return rect;
+    }
+
+    function drawLine(ctx, points, color, width = 2) {
+      ctx.beginPath();
+      points.forEach((p, i) => {
+        if (i === 0) ctx.moveTo(p.x, p.y);
+        else ctx.lineTo(p.x, p.y);
+      });
+      ctx.strokeStyle = color;
+      ctx.lineWidth = width;
+      ctx.lineJoin = "round";
+      ctx.lineCap = "round";
+      ctx.stroke();
+    }
+
+    function drawChart() {
+      const rect = resizeCanvas(chartCanvas);
+      const s = sample();
+      const H = Math.min(state.horizon, s.horizon_steps);
+      const ch = state.channelIndex;
+      const gen = state.generatorIndex;
+      const pred = s.pred_rollout.slice(0, H + 1).map(step => step[gen][ch]);
+      const truth = s.true_rollout.slice(0, H + 1).map(step => step[gen][ch]);
+      const zero = Array(pred.length).fill(truth[0]);
+      const all = pred.concat(truth, zero);
+      let min = Math.min(...all);
+      let max = Math.max(...all);
+      const padVal = Math.max((max - min) * .16, .0001);
+      min -= padVal;
+      max += padVal;
+
+      const pad = { left: 58, right: 28, top: 28, bottom: 58 };
+      const w = rect.width;
+      const h = rect.height;
+      const innerW = Math.max(10, w - pad.left - pad.right);
+      const innerH = Math.max(10, h - pad.top - pad.bottom);
+      const x = i => pad.left + (i / Math.max(H, 1)) * innerW;
+      const y = v => pad.top + (1 - (v - min) / (max - min)) * innerH;
+
+      chart.clearRect(0, 0, w, h);
+      chart.fillStyle = "#12140f";
+      chart.fillRect(0, 0, w, h);
+
+      s.fault_window.slice(0, H).forEach((active, i) => {
+        if (!active) return;
+        chart.fillStyle = colors.fault;
+        chart.fillRect(x(i), pad.top, Math.max(1, x(i + 1) - x(i)), innerH);
+      });
+
+      chart.strokeStyle = colors.grid;
+      chart.lineWidth = 1;
+      for (let i = 0; i <= 4; i++) {
+        const yy = pad.top + innerH * i / 4;
+        chart.beginPath();
+        chart.moveTo(pad.left, yy);
+        chart.lineTo(w - pad.right, yy);
+        chart.stroke();
+      }
+      for (let i = 0; i <= H; i++) {
+        const xx = x(i);
+        chart.beginPath();
+        chart.moveTo(xx, pad.top);
+        chart.lineTo(xx, pad.top + innerH);
+        chart.stroke();
+      }
+
+      const predPts = pred.map((v, i) => ({ x: x(i), y: y(v) }));
+      const truthPts = truth.map((v, i) => ({ x: x(i), y: y(v) }));
+      const zeroPts = zero.map((v, i) => ({ x: x(i), y: y(v) }));
+      drawLine(chart, zeroPts, colors.zero, 1.5);
+      drawLine(chart, truthPts, colors.cyan, 2);
+      drawLine(chart, predPts, colors.pred, 3);
+
+      predPts.forEach((p, i) => {
+        chart.beginPath();
+        chart.arc(p.x, p.y, i === H ? 5 : 3, 0, Math.PI * 2);
+        chart.fillStyle = colors.pred;
+        chart.fill();
+      });
+
+      chart.fillStyle = colors.text;
+      chart.font = "700 13px Avenir Next, sans-serif";
+      chart.fillText(`Generator ${gen} / ${channelName()} / ${H}-step rollout`, pad.left, 22);
+
+      chart.fillStyle = colors.muted;
+      chart.font = "12px Avenir Next, sans-serif";
+      chart.fillText(fmt(max, 4), 12, pad.top + 4);
+      chart.fillText(fmt(min, 4), 12, pad.top + innerH);
+      chart.fillText("step", w - pad.right - 24, h - 18);
+
+      const legend = [
+        ["gridwm-agent imagined future", colors.pred],
+        ["Reference future", colors.cyan],
+        ["No-change baseline", colors.zero],
+        ["Failure window", colors.amber]
+      ];
+      legend.forEach((item, i) => {
+        const lx = pad.left + i * 168;
+        const ly = h - 26;
+        chart.fillStyle = item[1];
+        chart.fillRect(lx, ly - 8, 18, 3);
+        chart.fillStyle = colors.muted;
+        chart.font = "12px Avenir Next, sans-serif";
+        chart.fillText(item[0], lx + 26, ly - 3);
+      });
+    }
+
+    function drawWorld() {
+      const rect = resizeCanvas(worldCanvas);
+      const s = sample();
+      const ch = state.channelIndex;
+      const pred = s.pred_rollout;
+      const base = pred[0];
+      const w = rect.width;
+      const h = rect.height;
+      const cx = w / 2;
+      const cy = h / 2;
+      const radius = Math.min(w, h) * .34;
+      const nodes = Array.from({ length: 10 }, (_, i) => {
+        const a = -Math.PI / 2 + i / 10 * Math.PI * 2;
+        return { x: cx + Math.cos(a) * radius, y: cy + Math.sin(a) * radius, i };
+      });
+      const deltas = nodes.map(n => Math.max(...pred.map(step => Math.abs(step[n.i][ch] - base[n.i][ch]))));
+      const maxDelta = Math.max(...deltas, 1e-9);
+
+      world.clearRect(0, 0, w, h);
+      world.fillStyle = "#11130f";
+      world.fillRect(0, 0, w, h);
+
+      const edges = [[0,1],[1,2],[2,3],[3,4],[4,5],[5,6],[6,7],[7,8],[8,9],[9,0],[0,5],[2,7],[3,8]];
+      edges.forEach(([a, b]) => {
+        world.beginPath();
+        world.moveTo(nodes[a].x, nodes[a].y);
+        world.lineTo(nodes[b].x, nodes[b].y);
+        world.strokeStyle = "rgba(242,240,232,.16)";
+        world.lineWidth = 1;
+        world.stroke();
+      });
+
+      nodes.forEach((n, idx) => {
+        const intensity = deltas[idx] / maxDelta;
+        const r = 11 + intensity * 16;
+        world.beginPath();
+        world.arc(n.x, n.y, r + 8, 0, Math.PI * 2);
+        world.fillStyle = `rgba(185,255,69,${0.04 + intensity * .16})`;
+        world.fill();
+        world.beginPath();
+        world.arc(n.x, n.y, r, 0, Math.PI * 2);
+        world.fillStyle = idx === s.risk.dominant_generator ? colors.red : `rgba(79,215,208,${0.25 + intensity * .65})`;
+        world.fill();
+        world.fillStyle = "#090a08";
+        world.font = "800 12px Avenir Next, sans-serif";
+        world.textAlign = "center";
+        world.textBaseline = "middle";
+        world.fillText(String(idx), n.x, n.y + 1);
+      });
+
+      world.textAlign = "left";
+      world.fillStyle = colors.muted;
+      world.font = "12px Avenir Next, sans-serif";
+      world.fillText("node brightness = imagined response magnitude", 18, h - 20);
+    }
+
+    function renderMetrics() {
+      const row = document.getElementById("metricsRow");
+      const v2 = data.metrics.v2;
+      const base = data.metrics.baseline;
+      const metrics = [
+        [fmt(v2.mean_fault_zero_ratio), "failure error vs no-change"],
+        [fmt(v2.mean_direction_accuracy), "failure-direction accuracy"],
+        [fmt(v2.mean_fault_shape_correlation), "failure shape score"],
+        [base.bounded_rollout ? "baseline stable" : "bounded V2 rollout", "multi-step status"]
+      ];
+      row.innerHTML = metrics.map(([value, label]) => (
+        `<div class="metric"><b>${value}</b><span>${label}</span></div>`
+      )).join("");
+    }
+
+    function renderControls() {
+      const list = document.getElementById("scenarioList");
+      list.innerHTML = data.samples.map((s, idx) => {
+        const a = s.action;
+        return `<button class="scenario ${idx === state.sampleIndex ? "active" : ""}" data-index="${idx}">
+          <strong><span>${s.title}</span><span>${s.risk.band}</span></strong>
+          <small>${a.event_code} / ${a.duration_ms} ms / ${a.resistance_ohm} ohm / risk ${s.risk.score}</small>
+        </button>`;
+      }).join("");
+      list.querySelectorAll("button").forEach(btn => {
+        btn.addEventListener("click", () => {
+          state.sampleIndex = Number(btn.dataset.index);
+          render();
+        });
+      });
+
+      const gen = document.getElementById("generatorSelect");
+      gen.innerHTML = Array.from({ length: 10 }, (_, i) => `<option value="${i}">Generator ${i}</option>`).join("");
+      gen.value = state.generatorIndex;
+      gen.onchange = () => {
+        state.generatorIndex = Number(gen.value);
+        render();
+      };
+
+      const segs = document.getElementById("channelSegments");
+      segs.innerHTML = data.channels.map((ch, idx) => (
+        `<button class="${idx === state.channelIndex ? "active" : ""}" data-channel="${idx}">${ch}</button>`
+      )).join("");
+      segs.querySelectorAll("button").forEach(btn => {
+        btn.addEventListener("click", () => {
+          state.channelIndex = Number(btn.dataset.channel);
+          render();
+        });
+      });
+
+      const horizon = document.getElementById("horizonRange");
+      horizon.value = state.horizon;
+      horizon.max = sample().horizon_steps;
+      horizon.oninput = () => {
+        state.horizon = Number(horizon.value);
+        document.getElementById("horizonLabel").textContent = `${state.horizon} steps`;
+        drawChart();
+      };
+      document.getElementById("horizonLabel").textContent = `${state.horizon} steps`;
+    }
+
+    function renderRisk() {
+      const s = sample();
+      const a = s.action;
+      document.getElementById("riskScore").textContent = s.risk.score;
+      document.getElementById("riskBand").textContent = s.risk.band;
+      document.getElementById("riskBar").style.width = `${s.risk.score}%`;
+      document.getElementById("eventTag").textContent = `${a.event_code} / ${a.duration_ms} ms / ${a.resistance_ohm} ohm`;
+      document.getElementById("dominantTag").textContent = `dominant: G${s.risk.dominant_generator} ${s.risk.dominant_channel}`;
+      document.getElementById("chartTitle").textContent = `${s.title} Counterfactual Rollout`;
+      const facts = [
+        [a.event_code, "fault action"],
+        [`${a.duration_ms} ms`, "event duration"],
+        [`G${s.risk.dominant_generator} / ${s.risk.dominant_channel}`, "dominant response"],
+        [fmt(s.risk.model_vs_no_change_error, 3), "event error vs no-change"]
+      ];
+      document.getElementById("factGrid").innerHTML = facts.map(([value, label]) => (
+        `<div class="fact"><b>${value}</b><span>${label}</span></div>`
+      )).join("");
+    }
+
+    function render() {
+      if (!data || !data.samples || data.samples.length === 0) {
+        document.body.innerHTML = '<div class="empty">Missing world_model_playground_data.js</div>';
+        return;
+      }
+      renderMetrics();
+      renderControls();
+      renderRisk();
+      drawChart();
+      drawWorld();
+    }
+
+    window.addEventListener("resize", () => {
+      drawChart();
+      drawWorld();
+    });
+    render();
+  </script>
+</body>
+</html>

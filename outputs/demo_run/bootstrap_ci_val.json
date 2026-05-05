@@ -1,0 +1,71 @@
+{
+  "agent_dir": "outputs/demo_run",
+  "split": "val",
+  "n_anchors": 16,
+  "n_candidates": 162,
+  "candidate_fault_types": null,
+  "n_resample": 1000,
+  "bootstrap_seed": 20260504,
+  "metrics": {
+    "discover_top10pct_hit_rate": {
+      "point": 0.621125,
+      "ci_low": 0.375,
+      "ci_high": 0.875,
+      "std": 0.12314492224610807
+    },
+    "safe_bottom10pct_hit_rate": {
+      "point": 0.4294375,
+      "ci_low": 0.1875,
+      "ci_high": 0.6875,
+      "std": 0.12283053302721601
+    },
+    "agent_discover_mean_risk": {
+      "point": 0.5104912132620811,
+      "ci_low": 0.40371895134449004,
+      "ci_high": 0.618705478310585,
+      "std": 0.05591357909286475
+    },
+    "agent_safe_mean_risk": {
+      "point": 0.22890773250162602,
+      "ci_low": 0.1584891952574253,
+      "ci_high": 0.3008012682199478,
+      "std": 0.03642716752236278
+    },
+    "random_mean_risk": {
+      "point": 0.31041869504749775,
+      "ci_low": 0.24135959669947624,
+      "ci_high": 0.37727077826857564,
+      "std": 0.03456559101738634
+    },
+    "oracle_high_mean_risk": {
+      "point": 0.5488477228581905,
+      "ci_low": 0.45065335333347323,
+      "ci_high": 0.6438835501670838,
+      "std": 0.05107123667787051
+    },
+    "oracle_low_mean_risk": {
+      "point": 0.18051811638474463,
+      "ci_low": 0.1284960988909006,
+      "ci_high": 0.23324434831738472,
+      "std": 0.026967522387700203
+    },
+    "risk_lift_vs_random": {
+      "point": 0.6562537398636341,
+      "ci_low": 0.31752012521028516,
+      "ci_high": 1.0832855284214018,
+      "std": 0.19588524302492366
+    },
+    "risk_reduction_vs_random": {
+      "point": 0.2658543241992593,
+      "ci_low": 0.17745742462575437,
+      "ci_high": 0.35830944180488583,
+      "std": 0.04785620133948088
+    },
+    "discover_oracle_regret": {
+      "point": 0.03835650959610939,
+      "ci_low": 0.019320459663867952,
+      "ci_high": 0.059540408104658125,
+      "std": 0.010385440797851876
+    }
+  }
+}

@@ -1,0 +1,10 @@
+model_type: latent_graph_wm
+in_channels: 4
+hidden: 192
+latent_dim: 128
+action_dim: 12
+encoder_layers: 2
+dynamics_layers: 2
+attn_heads: 2
+dropout: 0.05
+# node_attr_dim, edge_attr_dim filled at runtime from data/graph_ieee39.h5
