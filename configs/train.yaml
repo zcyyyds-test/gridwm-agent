@@ -1,0 +1,22 @@
+batch_size: 512
+pairs_per_traj_per_epoch: 64
+epochs: 50
+rollout_horizon: 5
+fault_window_frac: 0.5
+fault_loss_weight: 4.0
+direction_loss_weight: 0.05
+corr_loss_weight: 0.02
+grad_clip_norm: 5.0
+log_every_steps: 25
+# v3 with lr=3e-4 + patience=5 oscillated (val_loss 0.005 ↔ 0.04 despite
+# grad-clip 1.0) and early-stopped at epoch 14. Drop lr 3e-4 → 1e-4 to
+# dampen and raise patience 5 → 25 so the cosine schedule can run.
+early_stop_patience: 25
+lr: 2e-4
+weight_decay: 1e-4
+optimizer: adamw
+scheduler: cosine
+precision: bf16
+seed: 42
+dataloader_workers: 2
+output_root: outputs

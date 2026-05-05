@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+dist/
+build/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# uv
+.uv/
+uv.lock.bak
+
+# Run-time artifacts
+outputs/
+*.log
+*.pt
+
+# Local / internal scratch
+.internal/
+.scratch/
+decisions.md
+KICKOFF.md
+plans/
+docs/superpowers/
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+*.swp

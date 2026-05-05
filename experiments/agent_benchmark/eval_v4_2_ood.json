@@ -1,0 +1,27 @@
+{
+  "agent_dir": "outputs\\agent_106612341b",
+  "world_run_dir": "outputs\\run_3acec7d14d",
+  "split": "val",
+  "n_anchors": 16,
+  "horizon": 10,
+  "candidate_fault_types": [
+    7
+  ],
+  "n_candidates": 54,
+  "critic_pearson": 0.23481187224388123,
+  "critic_spearman": 0.2998214066028595,
+  "discover_top10pct_hit_rate": 0.5,
+  "safe_bottom10pct_hit_rate": 0.3125,
+  "discover_oracle_regret": 0.06266739219427109,
+  "safe_oracle_regret": 0.048447538167238235,
+  "risk_lift_vs_random": 0.277068167924881,
+  "risk_reduction_vs_random": 0.2808140814304352,
+  "agent_latency_ms": 0.22018062518327497,
+  "exhaustive_rollout_latency_ms": 499.9800625082571,
+  "agent_discover_mean_risk": 0.4747483730316162,
+  "agent_safe_mean_risk": 0.26735639572143555,
+  "random_mean_risk": 0.3717486560344696,
+  "ft7_heuristic_mean_risk": 0.4326053261756897,
+  "oracle_high_mean_risk": 0.5374157428741455,
+  "oracle_low_mean_risk": 0.2189088761806488
+}
